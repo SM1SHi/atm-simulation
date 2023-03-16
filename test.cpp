@@ -11,21 +11,28 @@ std::string registerID() {
     return name;
 }
 
+namespace fs = std::filesystem;
+std::string userdir = "./users/";
+
 void createPath(std::string& ID) {
-   
-    std::string userid = "./users/";
-    userid += ID;
     
-    // ADD THIS --------------------------------{}{}{}{}{}{}{}{}{}
-    //create files in folder /user_name/ --> history, PIN, balance
-   
-    std::filesystem::path path(userid);
-    path /= ID + "_balance.txt"; 
-    std::filesystem::create_directories(path.parent_path()); 
-    std::ofstream ofs(path, std::ios_base::app);
-    ofs << "1. this is some text in the new file\n" + ID + "\n";
+    userdir += ID;
+
+    fs::path path(userdir);
+    path /= ID;
+    std::ofstream ofs(path);
+    fs::path userpath(userdir);
+    fs::create_directories(userpath);
+
+    std::string filenames[] = { "_balance.txt", "_PIN.txt", "_history" };
+    for (const auto& filename : filenames) {
+        fs::path filepath(userpath / (ID + filename));
+        std::ofstream ofs(filepath);
+        
+    }
     ofs.close();
 }
+
 
 int main(){
 
