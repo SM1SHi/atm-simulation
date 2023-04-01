@@ -8,9 +8,11 @@
 #include <sstream>
 #include <openssl/sha.h>
 #include <openssl/evp.h>
+#include <thread>
+#include <chrono>
+#include <future>
 
 #include "utils.h"
-#include "login.h"
 
 //sha256 implementation, works good 
 std::string sha256(const std::string str)
@@ -41,17 +43,19 @@ std::string registerID() {
 namespace fs = std::filesystem;
 
 // creates folder named after ID, with needed files 
-void createPath(std::string& ID, std::string& BAL, std::string& PIN) {
-    //below are defined in "utils.h" 
-    //extern std::string userdir = "./users/";
-    //extern std::string filenames[] = { "_balance.txt", "_PIN.txt", "_history.txt" };
-    userdir += ID;
 
-    fs::path path(userdir);
+void createPath(std::string& ID, int& BAL, std::string& PIN) {
+    //below are declared in "utils.h" and defined in "defs.cpp" 
+    //extern std::string userdir = "./users/";
+    //extern const std::string filenames[] = { "_balance.txt", "_PIN.txt", "_history.txt" };
+    std::string dirstring = userdir;
+    dirstring += ID;
+
+    fs::path path(dirstring);
     path /= ID;
     std::ofstream ofs(path);
 
-    fs::path userpath(userdir);
+    fs::path userpath(dirstring);
     fs::create_directories(userpath);
 
     for (const auto& filename : filenames) {
@@ -119,36 +123,34 @@ std::string inputPIN(std::string& PINin) {
 }
 
 // BALLIN() was sacrificed for the sake of readability :(
-std::string inputBAL(std::string& BALin) {
+int inputBAL(int& BALin) {
     std::cout << "Balance (EUR): ";
     std::cin >> BALin;
 
-    for (char& c : BALin) {
-        if (!std::isdigit(c)) {
-            BALin = "";
-            std::cout << "Invalid input. Please enter numerical values only." << std::endl;
-            inputBAL(BALin);
-        }
+    if (!std::cin.good()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Invalid input. Please enter numerical values only." << std::endl;
+        inputBAL(BALin);
     }
+
     return BALin;
 }
 
+
 void usrinputStats() {
     std::string usr_name = registerID();
-    std::string balance, PIN;
+    std::string  PIN;
+    int balance;
 
     std::cout << "Please enter account stats: " << std::endl;
     balance = inputBAL(balance);
 
     std::cout << "Enter the PIN you want to set: " << std::endl;
-    PIN = inputPIN(PIN);
-    PIN = sha256(PIN);
+    PIN = sha256(inputPIN(PIN));
 
     createPath(usr_name, balance, PIN);
-    
+    std::exit(0);
 }
 
-int main(){
-    //usrinputStats();
-    func();
-}
+
