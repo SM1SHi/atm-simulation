@@ -32,7 +32,6 @@ std::string sha256(const std::string str)
     return ss.str();
 }
 
-
 // !!! FIX USER CANNOT ENTER SPACE OR RETURN AS A FIRST CHARACTER 
 std::string registerID() {
     std::string name;
@@ -45,7 +44,6 @@ std::string registerID() {
 namespace fs = std::filesystem;
 
 // creates folder named after ID, with needed files 
-
 void createPath(std::string& ID, int& BAL, std::string& PIN) {
     //below are declared in "utils.h" and defined in "defs.cpp" 
     //extern std::string userdir = "./users/";
@@ -138,8 +136,7 @@ int inputBAL(int& BALin) {
     return BALin;
 }
 
-
-void usrinputStats() {
+void registerUser() {
     std::string usr_name = registerID();
     std::string  PIN;
     int balance;
@@ -150,8 +147,14 @@ void usrinputStats() {
     std::cout << "Enter the PIN you want to set: " << std::endl;
     PIN = sha256(inputPIN(PIN));
 
+    std::cout << "Account successfully registered! " << std::endl;
+    std::cout << "Select login from menu if you want to login" << std::endl;
+    std::cout << std::endl;
     createPath(usr_name, balance, PIN);
-    std::exit(0);
+   
+    std::cin.ignore();
+    std::cout.flush();
+    
 }
 
 

@@ -13,10 +13,6 @@ namespace fs = std::filesystem;
 
 std::string confirmID() {
 	std::string username;
-
-	std::cout << "\nLogin to a user account" << std::endl;
-	std::cout << "Please enter your full name: ";
-
 	std::getline(std::cin, username);
 
 	std::string dirstring = userdir;
@@ -38,12 +34,12 @@ std::string confirmID() {
 // ako je hashovan string isti kao i onaj sto si dobio kada si procitao fajl nastavi
 // ako hashovan string nije isti onda daj korisniku jos 3 pokusaja i posle toga terminisi program	
 //loguj cinjenicu da je korisnik failovao 3 puta (moguci pokusaj provale pina)
-void authenticateUser(std::string& ID) {
+std::string authenticateUser(std::string& ID) {
 	static int count = 0;
 	count++;
 	if (count >= 4) {
 		std::cout << "Too many attempts." << std::endl;
-		exit(0); //!!! maybe prompt user to beginning of the program 
+		menu(); //!!! maybe prompt user to beginning of the program 
 	}
 	std::string PIN;
 	std::string userpath;
@@ -67,12 +63,28 @@ void authenticateUser(std::string& ID) {
 
 	PIN = sha256(inputPIN(PIN));
 	if (PIN == contents) {
-		std::cout << "success" << std::endl;
+		std::cout << "Access granted." << std::endl;
+		std::cin.ignore();
+		std::cout.flush();
+		return ID;
 	}
 	else {
-		std::cout << "nope..." << std::endl;
+		std::cout << "Wrong PIN." << std::endl;
 		authenticateUser(ID);
 	}
+}
 
-	std::cout << PIN;
+std::string login() {
+
+	std::cout << "\nLogin to a user account" << std::endl;
+	std::cout << "Please enter your full name: ";
+	std::string loginID = confirmID();
+
+	std::cout << "You can enter your PIN now " << std::endl;
+	std::cout << "> ";
+	loginID = authenticateUser(loginID);
+	
+	std::cin.ignore();
+	std::cout.flush();
+	return loginID;
 }
