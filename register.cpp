@@ -32,6 +32,8 @@ std::string sha256(const std::string str)
     return ss.str();
 }
 
+
+// !!! FIX USER CANNOT ENTER SPACE OR RETURN AS A FIRST CHARACTER 
 std::string registerID() {
     std::string name;
     std::cout << "Hello, please enter your name" << std::endl;
@@ -92,7 +94,6 @@ std::string maskpass(std::string& pass) {
     }
     std::cout << std::endl;
     return pass;
-
 }
 
 std::string inputPIN(std::string& PINin) {
