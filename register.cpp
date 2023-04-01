@@ -8,9 +8,7 @@
 #include <sstream>
 #include <openssl/sha.h>
 #include <openssl/evp.h>
-#include <thread>
-#include <chrono>
-#include <future>
+#include <cctype>
 
 #include "utils.h"
 
@@ -35,9 +33,18 @@ std::string sha256(const std::string str)
 // !!! FIX USER CANNOT ENTER SPACE OR RETURN AS A FIRST CHARACTER 
 std::string registerID() {
     std::string name;
-    std::cout << "Hello, please enter your name" << std::endl;
+    
+    std::cout << "Hello, please enter your full name" << std::endl;
     std::cout << "> ";
     std::getline(std::cin, name);
+    for (const auto& c : name) {
+        if (!std::isalpha(c)) {
+            std::cout << "User name must use alphabet only" << std::endl;
+            std::cin.ignore();
+            std::cout.flush();
+            menu();
+        }
+    }
     return name;
 }
 
@@ -151,10 +158,10 @@ void registerUser() {
     std::cout << "Select login from menu if you want to login" << std::endl;
     std::cout << std::endl;
     createPath(usr_name, balance, PIN);
+    LOG(usr_name, "PIN set.");
    
     std::cin.ignore();
     std::cout.flush();
-    
 }
 
 

@@ -2,9 +2,9 @@
 #include <string>
 #include "utils.h"
 
-void menu() {
+std::string menu() {
 	int op;
-	std::cout << "Select option:"<< std::endl;
+	std::cout << "Welcome, please select an option:"<< std::endl;
 	std::cout << "1. Register " << std::endl;
 	std::cout << "2. Login" << std::endl;
 	std::cout << "3. Exit" << std::endl;
@@ -17,12 +17,14 @@ void menu() {
 		std::cin.ignore();
 		std::cout.flush();
 		registerUser();
+		menu();
 		break;
 	case 2:
 		std::cout << "Login selected." << std::endl;
 		std::cin.ignore();
 		std::cout.flush();
 		loginID = login();
+		return loginID;
 		break;
 	case 3:
 		std::cout << "exiting..." << std::endl;
@@ -30,6 +32,6 @@ void menu() {
 
 	default:
 		std::cout << "Wrong option, try again." << std::endl;
-		return menu();
+		menu();
 	}
 }

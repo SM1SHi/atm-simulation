@@ -29,8 +29,10 @@ int main() {
     //std::cout << "Elapsed time: " << elapsed_seconds << " seconds" << std::endl;
 
     //threadObj.join();
-    menu();
-    return 0;
+    std::string credentials;
+    credentials = menu();
+    submenuLogin(credentials);
+    
 }
 //int main() {
 //	std::string loginID = confirmID();

@@ -3,8 +3,6 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
-#include <thread>
-#include <chrono>
 
 #include "utils.h"
 // DEFINED IN defs.cpp, DECLARED in utils.h 
@@ -38,8 +36,10 @@ std::string authenticateUser(std::string& ID) {
 	static int count = 0;
 	count++;
 	if (count >= 4) {
+		LOG(ID, "PIN wrong too many times!");
 		std::cout << "Too many attempts." << std::endl;
-		menu(); //!!! maybe prompt user to beginning of the program 
+		std::cout << std::endl;
+		menu(); 	
 	}
 	std::string PIN;
 	std::string userpath;
@@ -63,6 +63,7 @@ std::string authenticateUser(std::string& ID) {
 
 	PIN = sha256(inputPIN(PIN));
 	if (PIN == contents) {
+		LOG(ID, "Account access granted to user.");
 		std::cout << "Access granted." << std::endl;
 		std::cin.ignore();
 		std::cout.flush();
@@ -83,8 +84,9 @@ std::string login() {
 	std::cout << "You can enter your PIN now " << std::endl;
 	std::cout << "> ";
 	loginID = authenticateUser(loginID);
-	
 	std::cin.ignore();
 	std::cout.flush();
+	
 	return loginID;
 }
+
