@@ -8,7 +8,6 @@
 #include <sstream>
 #include <openssl/sha.h>
 #include <openssl/evp.h>
-#include <cctype>
 
 #include "utils.h"
 
