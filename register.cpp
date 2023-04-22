@@ -34,14 +34,12 @@ std::string sha256(const std::string str)
 std::string registerID() {
     std::string name;
     
-    std::cout << "Hello, please enter your full name" << std::endl;
+    std::cout << "Hello, please enter your full name: " << std::endl;
     std::cout << "> ";
     std::getline(std::cin, name);
     for (const auto& c : name) {
         if (!std::isalpha(c)) {
             std::cout << "User name must use alphabet only" << std::endl;
-            std::cin.ignore();
-            std::cout.flush();
             menu();
         }
     }
@@ -155,13 +153,10 @@ void registerUser() {
     PIN = sha256(inputPIN(PIN));
 
     std::cout << "Account successfully registered! " << std::endl;
-    std::cout << "Select login from menu if you want to login" << std::endl;
+    std::cout << "Select login from menu if you want to login (PRESS ENTER)" << std::endl;
     std::cout << std::endl;
     createPath(usr_name, balance, PIN);
     LOG(usr_name, "PIN set.");
-   
-    std::cin.ignore();
-    std::cout.flush();
 }
 
 

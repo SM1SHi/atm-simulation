@@ -60,32 +60,32 @@ std::string authenticateUser(std::string& ID) {
 		}
 		pin_path.close();
 	}
-
-	PIN = sha256(inputPIN(PIN));
-	if (PIN == contents) {
-		LOG(ID, "Account access granted to user.");
-		std::cout << "Access granted." << std::endl;
-		std::cin.ignore();
-		std::cout.flush();
-		return ID;
-	}
-	else {
-		std::cout << "Wrong PIN." << std::endl;
-		authenticateUser(ID);
-	}
+	do {
+		PIN = sha256(inputPIN(PIN));
+		if (PIN == contents) {
+			LOG(ID, "Account access granted to user.");
+			std::cout << "Access granted." << std::endl;
+			return ID;
+		}
+		else {
+			std::cout << "Wrong PIN." << std::endl;
+			authenticateUser(ID);
+		}
+	} while (true);
 }
 
 std::string login() {
 
 	std::cout << "\nLogin to a user account" << std::endl;
 	std::cout << "Please enter your full name: ";
+	std::cin.ignore();
+	std::cout.flush(); 
 	std::string loginID = confirmID();
-
+	
 	std::cout << "You can enter your PIN now " << std::endl;
 	std::cout << "> ";
 	loginID = authenticateUser(loginID);
-	std::cin.ignore();
-	std::cout.flush();
+
 	
 	return loginID;
 }
