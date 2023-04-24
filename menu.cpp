@@ -3,7 +3,8 @@
 #include "utils.h"
 
 std::string menu() {
-	int op;
+	uint8_t op;
+	std::string loginID;
 	do {
 		std::cout << "Welcome, please select an option:" << std::endl;
 		std::cout << "1. Register " << std::endl;
@@ -11,12 +12,10 @@ std::string menu() {
 		std::cout << "3. Exit" << std::endl;
 		std::cout << "> ";
 		std::cin >> op;
-		std::string loginID;
+		
 		switch (op) {
 		case 1:
 			std::cout << "Register selected." << std::endl;
-			std::cin.ignore();
-			std::cout.flush();
 			registerUser();
 			break;
 		case 2:
@@ -26,11 +25,15 @@ std::string menu() {
 		case 3:
 			std::cout << "exiting..." << std::endl;
 			exit(0);
-
 		default:
-			std::cout << "Wrong option, try again." << std::endl;
-			break;
+			if (std::cin.fail()) {
+				std::cin.clear();
+				std::cin.ignore();
+				std::cout << "Wrong option, try again." << std::endl;
+			}
+			continue;
 		}
 		std::cout << std::endl;
-	} while (op != 3);
+		break;
+	} while (true);
 }

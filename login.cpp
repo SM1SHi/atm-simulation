@@ -11,20 +11,25 @@ namespace fs = std::filesystem;
 
 std::string confirmID() {
 	std::string username;
-	std::getline(std::cin, username);
+	bool valid_username = false;
 
-	std::string dirstring = userdir;
-	dirstring += username;
+	while (!valid_username) {
+		std::cout << "Enter your username: ";
+		std::getline(std::cin, username);
 
-	fs::path userpath(dirstring);
-	
-	if (fs::is_directory(userpath)) {
-		return username;
+		std::string dirstring = userdir;
+		dirstring += username;
+
+		fs::path userpath(dirstring);
+		if (fs::is_directory(userpath)) {
+			valid_username = true;
+		}
+		else {
+			std::cout << "User does not exist! Please try again.\n";
+		}
 	}
-	else {
-		std::cout << "User does not exist! Try again.\n";
-		return confirmID();  // Call confirmID recursively until a valid user is found
-	}
+
+	return username;
 }
 
 //confirmID returns ID arg for this 
@@ -32,15 +37,10 @@ std::string confirmID() {
 // ako je hashovan string isti kao i onaj sto si dobio kada si procitao fajl nastavi
 // ako hashovan string nije isti onda daj korisniku jos 3 pokusaja i posle toga terminisi program	
 //loguj cinjenicu da je korisnik failovao 3 puta (moguci pokusaj provale pina)
+
 std::string authenticateUser(std::string& ID) {
-	static int count = 0;
-	count++;
-	if (count >= 4) {
-		LOG(ID, "PIN wrong too many times!");
-		std::cout << "Too many attempts." << std::endl;
-		std::cout << std::endl;
-		menu(); 	
-	}
+	unsigned static int count = 0;
+
 	std::string PIN;
 	std::string userpath;
 
@@ -60,7 +60,8 @@ std::string authenticateUser(std::string& ID) {
 		}
 		pin_path.close();
 	}
-	do {
+	// !!! BUG HIDDEN HERE 
+	while(true) {
 		PIN = sha256(inputPIN(PIN));
 		if (PIN == contents) {
 			LOG(ID, "Account access granted to user.");
@@ -69,24 +70,26 @@ std::string authenticateUser(std::string& ID) {
 		}
 		else {
 			std::cout << "Wrong PIN." << std::endl;
-			authenticateUser(ID);
+			count++;
+			if (count > 4) {
+				LOG(ID, "PIN wrong too many times!");
+				std::cout << "Too many attempts." << std::endl;
+				std::cout << std::endl;
+				break;
+			}
+			continue;
 		}
-	} while (true);
+	}
 }
 
 std::string login() {
-
 	std::cout << "\nLogin to a user account" << std::endl;
-	std::cout << "Please enter your full name: ";
-	std::cin.ignore();
-	std::cout.flush(); 
 	std::string loginID = confirmID();
-	
+	// next two lines must stay lol
+	std::cin.ignore();
+	std::cout.flush();
 	std::cout << "You can enter your PIN now " << std::endl;
-	std::cout << "> ";
 	loginID = authenticateUser(loginID);
-
-	
 	return loginID;
 }
 

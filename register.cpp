@@ -6,6 +6,7 @@
 #include <conio.h>
 #include <iomanip>
 #include <sstream>
+#include <stdint.h>
 #include <openssl/sha.h>
 #include <openssl/evp.h>
 
@@ -30,7 +31,9 @@ std::string sha256(const std::string str)
 }
 
 // !!! FIX USER CANNOT ENTER SPACE OR RETURN AS A FIRST CHARACTER 
+// !!! user name cannot be 1 character long
 std::string registerID() {
+    
     std::string name;
     
     std::cout << "Hello, please enter your full name: " << std::endl;
@@ -39,7 +42,6 @@ std::string registerID() {
     for (const auto& c : name) {
         if (!std::isalpha(c)) {
             std::cout << "User name must use alphabet only" << std::endl;
-            menu();
         }
     }
     return name;
@@ -48,7 +50,7 @@ std::string registerID() {
 namespace fs = std::filesystem;
 
 // creates folder named after ID, with needed files 
-void createPath(std::string& ID, int& BAL, std::string& PIN) {
+void createPath(std::string& ID, uint64_t& BAL, std::string& PIN) {
     //below are declared in "utils.h" and defined in "defs.cpp" 
     //extern std::string userdir = "./users/";
     //extern const std::string filenames[] = { "_balance.txt", "_PIN.txt", "_history.txt" };
@@ -99,8 +101,10 @@ std::string maskpass(std::string& pass) {
 }
 
 std::string inputPIN(std::string& PINin) {
+    std::cin.ignore();
+    std::cout.flush();
     PINin = maskpass(PINin);
-    
+
     for (char& c : PINin) {
         if (!std::isdigit(c)) {
             PINin = "";
@@ -126,34 +130,41 @@ std::string inputPIN(std::string& PINin) {
 }
 
 // BALLIN() was sacrificed for the sake of readability :(
-int inputBAL(int& BALin) {
-    std::cout << "Balance (EUR): ";
-    std::cin >> BALin;
+int inputBAL(uint64_t& BALin) {
+    while (true) {
+        std::cout << "Balance (EUR): ";
+        std::cin >> BALin;
 
-    if (!std::cin.good()) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Invalid input. Please enter numerical values only." << std::endl;
-        inputBAL(BALin);
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid input. Please enter numerical values only." << std::endl;
+        }
+        else {
+            break;
+        }
     }
 
     return BALin;
 }
 
 void registerUser() {
+    std::cin.ignore();
+    std::cout.flush();
     std::string usr_name = registerID();
     std::string  PIN;
-    int balance;
+    uint64_t balance;
 
     std::cout << "Please enter account stats: " << std::endl;
     balance = inputBAL(balance);
 
     std::cout << "Enter the PIN you want to set: " << std::endl;
     PIN = sha256(inputPIN(PIN));
-
+   
     std::cout << "Account successfully registered! " << std::endl;
     std::cout << "Select login from menu if you want to login (PRESS ENTER)" << std::endl;
     std::cout << std::endl;
+
     createPath(usr_name, balance, PIN);
     LOG(usr_name, "PIN set.");
 }
